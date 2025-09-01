@@ -14,7 +14,9 @@ services:
       - ./data:/data/db
 
   etudiant-service:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: etudiant-service
     restart: always
     ports:

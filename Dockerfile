@@ -1,25 +1,18 @@
-version: "3.9"
-services:
-  mongodb:
-    image: mongo:7.0.5
-    container_name: mongodb
-    restart: always
-    ports:
-      - "2717:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: adrien
-      MONGO_INITDB_ROOT_PASSWORD: franto
-      MONGO_INITDB_DATABASE: etudiant-service
-    volumes:
-      - ./data:/data/db
+# Stage 1: Build avec Maven
+FROM maven:3.9.6-eclipse-temurin-21 AS builder
+WORKDIR /app
 
-  etudiant-service:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: etudiant-service
-    restart: always
-    ports:
-      - "8080:8080"
-    depends_on:
-      - mongodb
+# Copie parent + module enfant
+COPY pom.xml .
+COPY etudiant-service/pom.xml etudiant-service/
+COPY etudiant-service/src etudiant-service/src
+
+# Build module etudiant-service
+RUN mvn -f etudiant-service/pom.xml clean package -DskipTests
+
+# Stage 2: Runtime avec JDK léger
+FROM eclipse-temurin:21-jdk-alpine
+WORKDIR /app
+COPY --from=builder /app/etudiant-service/target/*.jar app.jar
+EXPOSE 8080
+ENTRYPOINT ["java","-jar","app.jar"]

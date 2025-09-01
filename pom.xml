@@ -19,6 +19,7 @@
 
     <modules>
         <module>etudiant-service</module>
+        <module>travail-service</module>
     </modules>
 
     <properties>

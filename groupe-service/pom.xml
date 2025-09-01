@@ -10,6 +10,8 @@
     <name>Archetype - groupe-service</name>
     <url>http://maven.apache.org</url>
 
+
+
     <properties>
         <java.version>21</java.version>
     </properties>
